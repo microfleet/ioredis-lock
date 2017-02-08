@@ -8,6 +8,7 @@ const expect = require('expect.js');
 const Redis = require('ioredis');
 const client = new Redis();
 const redislock = require('../../lib/redislock');
+const Lock = require('../../lib/lock');
 
 const LockAcquisitionError = redislock.LockAcquisitionError;
 const LockReleaseError = redislock.LockReleaseError;
@@ -161,4 +162,22 @@ describe('lock', () => {
       });
     });
   });
+
+  describe('getAcquiredLocks', () => {
+    it('returns an array of locks', () => {
+      const oldLockCount = redislock.getAcquiredLocks().length
+      return lock.acquire(key).then(() => {
+        expect(redislock.getAcquiredLocks()).to.have.length(oldLockCount + 1);
+        let recount = 0
+        redislock.getAcquiredLocks().forEach((l) => {
+          recount ++
+          expect(l).to.be.a(Lock)
+        })
+        expect(recount).to.eql(oldLockCount + 1);
+        return lock.release()
+      }).then(() => {
+        expect(redislock.getAcquiredLocks()).to.have.length(oldLockCount);
+      });
+    });
+  })
 });
