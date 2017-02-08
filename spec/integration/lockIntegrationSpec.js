@@ -165,7 +165,7 @@ describe('lock', () => {
 
   describe('getAcquiredLocks', () => {
     it('returns an array of locks', () => {
-      const oldLockCount = redislock.getAcquiredLocks().length
+      const oldLockCount = redislock.getAcquiredLocks().length;
       return lock.acquire(key).then(() => {
         expect(redislock.getAcquiredLocks()).to.have.length(oldLockCount + 1);
         let recount = 0;
@@ -179,5 +179,5 @@ describe('lock', () => {
         expect(redislock.getAcquiredLocks()).to.have.length(oldLockCount);
       });
     });
-  })
+  });
 });
