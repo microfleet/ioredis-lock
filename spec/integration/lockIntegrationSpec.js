@@ -149,7 +149,7 @@ describe('lock', () => {
     });
 
     it('throws an error if the key no longer belongs to the lock', () => {
-      lock.acquire(key).then(() => {
+      return lock.acquire(key).then(() => {
         return client.set(key, 'mismatch');
       }).then(() => {
         return lock.extend(10000);
