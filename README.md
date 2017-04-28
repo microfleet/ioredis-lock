@@ -24,6 +24,8 @@ WATCH/MULTI. Refer to [Implementation](#implementation) and
 
 ## Installation
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/makeomatic/ioredis-lock.svg)](https://greenkeeper.io/)
+
 Using npm, you can install redislock with `npm install ioredis-lock -S`.
 
 If you need node 4.x.x support, use the following `npm install ioredis-lock@legacy -S`
