@@ -26,16 +26,7 @@ WATCH/MULTI. Refer to [Implementation](#implementation) and
 
 Using npm, you can install redislock with `npm install ioredis-lock -S`.
 
-If you need node 4.x.x support, use the following `npm install ioredis-lock@legacy -S`
-Development of this version is handled here: https://github.com/makeomatic/ioredis-lock/tree/node4
-
-You can also require it as a dependency in your `package.json` file:
-
-```
-"dependencies": {
-    "ioredis-lock": "~2.0.0"
-}
-```
+Note: since version 3.4.0 it's possible to use this with node@4 once again
 
 ## Overview
 

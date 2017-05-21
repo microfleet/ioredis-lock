@@ -5,7 +5,10 @@ const scripts = require('./scripts');
 const defaults = require('lodash.defaults');
 const each = require('lodash.foreach');
 
-const { LockAcquisitionError, LockReleaseError, LockExtendError } = errors;
+// so it's compatible with node 4
+const LockAcquisitionError = errors.LockAcquisitionError;
+const LockReleaseError = errors.LockReleaseError;
+const LockExtendError = errors.LockExtendError;
 
 // helper for using both ifaces
 function promiseOrFunction(promise, fn) {
@@ -21,25 +24,6 @@ function promiseOrFunction(promise, fn) {
  * @class Lock
  */
 class Lock {
-
-  /**
-   * An object containing the default options used by each module instance.
-   * Should not modified directly, but instead using setDefaults.
-   *
-   * @private
-   */
-  static _defaults = {
-    timeout: 10000,
-    retries: 0,
-    delay: 50,
-  };
-
-  /**
-   * An object mapping UUIDs to the locks currently held by this module.
-   *
-   * @private
-   */
-  static _acquiredLocks = new Set();
 
   /**
    * The constructor for a Lock object. Accepts both a redis client, as well as
@@ -102,8 +86,9 @@ class Lock {
         lock._locked = true;
         lock._key = key;
         Lock._acquiredLocks.add(lock);
+        return null;
       })
-      .catch(err => {
+      .catch((err) => {
         // Wrap redis errors
         if (!(err instanceof LockAcquisitionError)) {
           throw new LockAcquisitionError(err.message);
@@ -143,7 +128,7 @@ class Lock {
 
     const promise = client
       .pexpireifequal(key, lock._id, time)
-      .then(res => {
+      .then((res) => {
         if (res) {
           return;
         }
@@ -154,7 +139,7 @@ class Lock {
 
         throw new LockExtendError(`Lock on "${key}" had expired`);
       })
-      .catch(err => {
+      .catch((err) => {
         if (!(err instanceof LockExtendError)) {
           throw new LockExtendError(err.message);
         }
@@ -189,7 +174,7 @@ class Lock {
 
     const promise = client
       .delifequal(key, lock._id)
-      .then(res => {
+      .then((res) => {
         lock._locked = false;
         lock._key = null;
         Lock._acquiredLocks.delete(lock);
@@ -197,8 +182,10 @@ class Lock {
         if (!res) {
           throw new LockReleaseError(`Lock on "${key}" had expired`);
         }
+
+        return null;
       })
-      .catch(err => {
+      .catch((err) => {
         // Wrap redis errors
         if (!(err instanceof LockReleaseError)) {
           throw new LockReleaseError(err.message);
@@ -250,7 +237,7 @@ class Lock {
 
     return client
       .set(key, this._id, 'PX', ttl, 'NX')
-      .then(res => {
+      .then((res) => {
         if (!res && !retries) {
           throw new LockAcquisitionError(`Could not acquire lock on "${key}"`);
         } else if (res) {
@@ -265,5 +252,24 @@ class Lock {
   }
 
 }
+
+/**
+ * An object containing the default options used by each module instance.
+ * Should not modified directly, but instead using setDefaults.
+ *
+ * @private
+ */
+Lock._defaults = {
+  timeout: 10000,
+  retries: 0,
+  delay: 50,
+};
+
+/**
+ * An object mapping UUIDs to the locks currently held by this module.
+ *
+ * @private
+ */
+Lock._acquiredLocks = new Set();
 
 module.exports = Lock;
