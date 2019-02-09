@@ -1,6 +1,6 @@
 {
   "name": "ioredis-lock",
-  "version": "3.4.0",
+  "version": "4.0.0",
   "description": "Node distributed locking using redis with ioredis adapter",
   "keywords": [
     "lock",
@@ -26,35 +26,34 @@
     "url": "https://github.com/makeomatic/ioredis-lock.git"
   },
   "dependencies": {
-    "bluebird": "^3.5.0",
+    "bluebird": "^3.5.3",
     "lodash.defaults": "^4.2.0",
-    "lodash.foreach": "^4.5.0",
-    "uuid": "^3.0.0"
+    "uuid": "^3.3.2"
   },
   "peerDependencies": {
-    "ioredis": "~2.x.x || ~3.x.x"
+    "ioredis": "~4.x.x"
   },
   "devDependencies": {
-    "babel-cli": "^6.24.1",
-    "babel-eslint": "^7.2.3",
-    "babel-plugin-transform-strict-mode": "^6.24.1",
-    "babel-register": "^6.24.1",
-    "eslint": "^3.19.0",
-    "eslint-config-makeomatic": "^1.0.1",
-    "eslint-plugin-import": "^2.2.0",
-    "eslint-plugin-promise": "^3.5.0",
-    "expect.js": "*",
-    "ioredis": "^3.0.0",
-    "mocha": "^3.4.1"
+    "@babel/cli": "^7.0.0",
+    "@babel/core": "^7.0.0",
+    "@babel/plugin-transform-strict-mode": "^7.0.0",
+    "@babel/register": "^7.0.0",
+    "babel-eslint": "^10.0.1",
+    "eslint": "^5.13.0",
+    "eslint-config-makeomatic": "^3.0.0",
+    "eslint-plugin-import": "^2.16.0",
+    "eslint-plugin-promise": "^4.0.1",
+    "ioredis": "^4.6.2",
+    "mocha": "^5.2.0"
   },
   "engine": {
-    "node": ">= 4.0.0"
+    "node": ">= 8.0.0"
   },
   "scripts": {
     "lint": "eslint ./src",
-    "test": "npm run lint && mocha -r babel-register -R spec spec spec/integration",
+    "test": "yarn lint && mocha -r @babel/register -R spec spec spec/integration",
     "compile": "babel -d ./lib src",
-    "prepublish": "npm run compile",
-    "pretest": "npm run compile"
+    "prepublish": "yarn compile",
+    "pretest": "yarn compile"
   }
 }

@@ -1,14 +1,15 @@
 const Promise = require('bluebird');
 const uuid = require('uuid');
+const defaults = require('lodash.defaults');
 const errors = require('./errors');
 const scripts = require('./scripts');
-const defaults = require('lodash.defaults');
-const each = require('lodash.foreach');
 
 // so it's compatible with node 4
-const LockAcquisitionError = errors.LockAcquisitionError;
-const LockReleaseError = errors.LockReleaseError;
-const LockExtendError = errors.LockExtendError;
+const {
+  LockAcquisitionError,
+  LockReleaseError,
+  LockExtendError,
+} = errors;
 
 // helper for using both ifaces
 function promiseOrFunction(promise, fn) {
@@ -24,7 +25,6 @@ function promiseOrFunction(promise, fn) {
  * @class Lock
  */
 class Lock {
-
   /**
    * The constructor for a Lock object. Accepts both a redis client, as well as
    * an options object with the following properties: timeout, retries and delay.
@@ -53,11 +53,11 @@ class Lock {
 
     // Iterate over supplied options
     if (options && typeof options === 'object') {
-      each(Lock._defaults, (value, key) => {
-        if (key in options) {
+      for (const key of Object.keys(Lock._defaults)) {
+        if (Object.prototype.hasOwnProperty.call(options, key)) {
           this[key] = options[key];
         }
-      });
+      }
     }
   }
 
@@ -250,7 +250,6 @@ class Lock {
           .then(() => lock._attemptLock(key, retries - 1));
       });
   }
-
 }
 
 /**

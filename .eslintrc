@@ -1,3 +1,4 @@
 {
-  "extends": "makeomatic"
+  "extends": "makeomatic",
+  "parser": "babel-eslint"
 }
