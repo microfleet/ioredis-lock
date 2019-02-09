@@ -75,11 +75,11 @@ describe('lock', () => {
       await lock.acquire(key);
 
       const ttl = await client.pttl(key);
-      assert(ttl > 9900 && ttl < 10000);
+      assert(ttl >= 9900 && ttl <= 10000);
 
       await lock.extend(30000);
       const nextTtl = await client.pttl(key);
-      assert(nextTtl > 29900 && nextTtl < 30000);
+      assert(nextTtl >= 29900 && nextTtl <= 30000);
     });
 
     it('throw an error if the key no longer belongs to the lock', async () => {
