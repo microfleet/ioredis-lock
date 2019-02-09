@@ -55,5 +55,9 @@
     "compile": "babel -d ./lib src",
     "prepublish": "yarn compile",
     "pretest": "yarn compile"
-  }
+  },
+  "files": [
+    "src/",
+    "lib/"
+  ]
 }
