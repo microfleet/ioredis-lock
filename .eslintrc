@@ -1,4 +1,7 @@
 {
   "extends": "makeomatic",
-  "parser": "babel-eslint"
+  "parser": "babel-eslint",
+  "rules": {
+    "max-classes-per-file": 0
+  }
 }
