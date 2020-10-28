@@ -38,6 +38,7 @@
     "@babel/core": "^7.0.0",
     "@babel/plugin-transform-strict-mode": "^7.0.0",
     "@babel/register": "^7.0.0",
+    "@types/ioredis": "^4.17.6",
     "babel-eslint": "^10.0.1",
     "eslint": "^5.13.0",
     "eslint-config-makeomatic": "^3.0.0",

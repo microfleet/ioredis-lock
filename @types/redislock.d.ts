@@ -2,9 +2,9 @@ import { Redis } from "ioredis";
 export {
   LockAcquisitionError,
   LockExtendError,
-  LockReleaseError
+  LockReleaseError,
 } from "../src/errors";
-export import Lock = require('../src/lock');
+export import Lock = require("../src/lock");
 
 /** redislock offers both atomic acquire and release operations,
  * avoiding race conditions among clients, as well as the need for lock-specific redis connections.
