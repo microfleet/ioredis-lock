@@ -1,4 +1,4 @@
-import { Redis } from "ioredis";
+import { Cluster, Redis } from "ioredis";
 export {
   LockAcquisitionError,
   LockExtendError,
@@ -26,7 +26,7 @@ export interface LockOption {
  * configured for use with the supplied redis client, as well as options,
  * if provided. The options object may contain following three keys,
  * as outlined at the start of the documentation: timeout, retries and delay. */
-export function createLock(client: Redis, option: LockOption): Lock;
+export function createLock(client: Redis | Cluster, option: LockOption): Lock;
 
 /** Sets the default options to be used by any new lock created by redislock.
  * Only available options are modified, and all other keys are ignored. */
