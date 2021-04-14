@@ -1,7 +1,10 @@
 {
-  "name": "ioredis-lock",
+  "name": "@microfleet/ioredis-lock",
   "version": "4.0.0",
   "description": "Node distributed locking using redis with ioredis adapter",
+  "publishConfig": {
+    "access": "public"
+  },
   "keywords": [
     "lock",
     "mutex",
@@ -20,44 +23,58 @@
   ],
   "license": "MIT",
   "main": "lib/redislock.js",
-  "homepage": "https://github.com/makeomatic/ioredis-lock",
+  "homepage": "https://github.com/microfleet/ioredis-lock",
   "repository": {
     "type": "git",
-    "url": "https://github.com/makeomatic/ioredis-lock.git"
+    "url": "https://github.com/microfleet/ioredis-lock.git"
   },
   "dependencies": {
-    "bluebird": "^3.5.3",
+    "bluebird": "^3.7.2",
     "lodash.defaults": "^4.2.0",
-    "uuid": "^3.3.2"
+    "uuid": "^8.3.2"
   },
   "peerDependencies": {
     "ioredis": "~4.x.x"
   },
   "devDependencies": {
-    "@babel/cli": "^7.0.0",
-    "@babel/core": "^7.0.0",
-    "@babel/plugin-transform-strict-mode": "^7.0.0",
-    "@babel/register": "^7.0.0",
-    "babel-eslint": "^10.0.1",
-    "eslint": "^5.13.0",
-    "eslint-config-makeomatic": "^3.0.0",
-    "eslint-plugin-import": "^2.16.0",
-    "eslint-plugin-promise": "^4.0.1",
-    "ioredis": "^4.6.2",
-    "mocha": "^5.2.0"
+    "@makeomatic/deploy": "^10.4.0",
+    "@types/bluebird": "^3.5.33",
+    "@types/ioredis": "^4.22.3",
+    "@types/lodash.defaults": "^4.2.6",
+    "@types/mocha": "^8.2.2",
+    "@types/node": "^14.14.39",
+    "@types/uuid": "^8.3.0",
+    "@typescript-eslint/eslint-plugin": "^4.22.0",
+    "@typescript-eslint/parser": "^4.22.0",
+    "cross-env": "^7.0.3",
+    "eslint": "^7.24.0",
+    "eslint-config-makeomatic": "^5.0.4",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-promise": "^5.1.0",
+    "ioredis": "^4.26.0",
+    "mocha": "^8.3.2",
+    "ts-node": "^9.1.1",
+    "typescript": "^4.2.3"
   },
   "engine": {
-    "node": ">= 8.0.0"
+    "node": ">= 12.18.0"
   },
   "scripts": {
     "lint": "eslint ./src",
-    "test": "yarn lint && mocha -r @babel/register -R spec spec spec/integration",
-    "compile": "babel -d ./lib src",
-    "prepublish": "yarn compile",
-    "pretest": "yarn compile"
+    "test": "yarn lint && mdep test run",
+    "compile": "tsc --build ./tsconfig.build.json",
+    "prepublishOnly": "yarn compile",
+    "pretest": "yarn compile",
+    "semantic-release": "semantic-release"
   },
   "files": [
     "src/",
     "lib/"
-  ]
+  ],
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -e $HUSKY_GIT_PARAMS",
+      "prepare-commit-msg": "./node_modules/@makeomatic/deploy/git-hooks/prepare-commit-msg $HUSKY_GIT_PARAMS"
+    }
+  }
 }

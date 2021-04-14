@@ -1,4 +1,3 @@
 {
-  "extends": "makeomatic",
-  "parser": "babel-eslint"
+  "extends": "makeomatic/typescript"
 }

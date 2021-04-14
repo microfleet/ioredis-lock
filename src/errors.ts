@@ -11,10 +11,10 @@
  *
  * @param {string} message The message to assign the error
  */
-class LockAcquisitionError extends Error {
-  constructor(message) {
-    super(message);
-    this.name = 'LockAcquisitionError';
+export class LockAcquisitionError extends Error {
+  constructor(message: string) {
+    super(message)
+    this.name = 'LockAcquisitionError'
   }
 }
 
@@ -27,10 +27,10 @@ class LockAcquisitionError extends Error {
  *
  * @param {string} message The message to assign the error
  */
-class LockReleaseError extends Error {
-  constructor(message) {
-    super(message);
-    this.name = 'LockReleaseError';
+export class LockReleaseError extends Error {
+  constructor(message: string) {
+    super(message)
+    this.name = 'LockReleaseError'
   }
 }
 
@@ -43,13 +43,9 @@ class LockReleaseError extends Error {
  *
  * @param {string} message The message to assign the error
  */
-class LockExtendError extends Error {
-  constructor(message) {
-    super(message);
-    this.name = 'LockExtendError';
+export class LockExtendError extends Error {
+  constructor(message: string) {
+    super(message)
+    this.name = 'LockExtendError'
   }
 }
-
-exports.LockAcquisitionError = LockAcquisitionError;
-exports.LockReleaseError = LockReleaseError;
-exports.LockExtendError = LockExtendError;

@@ -11,7 +11,6 @@ WATCH/MULTI. Refer to [Implementation](#implementation) and
 * [Alternatives](#alternatives)
 * [API](#api)
     * [redislock.createLock(client, \[options\])](#redislockcreatelockclient-options)
-    * [redislock.setDefaults(options)](#redislocksetdefaultsoptions)
     * [redislock.getAcquiredLocks()](#redislockgetacquiredlocks)
     * [redislock.LockAcquisitionError](#redislocklockacquisitionerror)
     * [redislock.LockReleaseError](#redislocklockreleaseerror)
@@ -188,19 +187,6 @@ var lock = redislock.createLock(client, {
 })
 ```
 
-#### redislock.setDefaults(options)
-
-Sets the default options to be used by any new lock created by redislock.
-Only available options are modified, and all other keys are ignored.
-
-``` javascript
-redislock.setDefaults({
-  timeout: 200000,
-  retries: 1,
-  delay: 50
-});
-```
-
 #### redislock.getAcquiredLocks()
 
 Returns an array of currently active/acquired locks.
@@ -234,8 +220,7 @@ could not be extended.
 ## Class: Lock
 
 The lock class exposed by redislock. Each instance is assigned a UUID v1 string
-as an id, and is configured to work with the given redis client. The default
-options from which is inherits may be changed by using redislock.setDefaults.
+as an id, and is configured to work with the given redis client
 
 #### lock.acquire[key, [fn]]
 
