@@ -30,7 +30,6 @@
   },
   "dependencies": {
     "bluebird": "^3.7.2",
-    "lodash.defaults": "^4.2.0",
     "uuid": "^8.3.2"
   },
   "peerDependencies": {
@@ -40,7 +39,6 @@
     "@makeomatic/deploy": "^10.4.0",
     "@types/bluebird": "^3.5.33",
     "@types/ioredis": "^4.22.3",
-    "@types/lodash.defaults": "^4.2.6",
     "@types/mocha": "^8.2.2",
     "@types/node": "^14.14.39",
     "@types/uuid": "^8.3.0",
