@@ -52,6 +52,8 @@ export class Lock {
    */
   constructor(client: Redis.Redis | Redis.Cluster, options?: Partial<Config>) {
     this._client = client
+    Object.defineProperty(this, '_client', { enumerable: false })
+
     if (options && typeof options === 'object') {
       Object.assign(this.config, options)
     }
