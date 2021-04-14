@@ -3,8 +3,10 @@
  * and getActiveLocks.
  */
 
-import { Lock } from './lock'
+import { Lock, Config } from './lock'
 export * from './errors'
+
+export { Config }
 
 /**
  * Returns a new Lock instance, configured for use with the supplied redis
