@@ -6,7 +6,7 @@
 import { Lock, Config } from './lock'
 export * from './errors'
 
-export { Config }
+export { Config, Lock }
 
 /**
  * Returns a new Lock instance, configured for use with the supplied redis
