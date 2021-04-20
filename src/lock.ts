@@ -71,7 +71,7 @@ export class Lock {
    *
    * @param key The redis key to use for the lock
    */
-  async acquire(key: string): Promise<void> {
+  async acquire(key: string): Promise<Lock> {
     if (this._locked) {
       throw new LockAcquisitionError('Lock already held')
     }
@@ -88,13 +88,15 @@ export class Lock {
 
       throw err
     }
+
+    return this
   }
 
   /**
    * Attempts to extend the lock
    * @param expire in `timeout` seconds
    */
-  async extend(time: number = this.config.timeout): Promise<void> {
+  async extend(time: number = this.config.timeout): Promise<Lock> {
     const key = this._key
     const client = this._client
 
@@ -105,7 +107,7 @@ export class Lock {
     try {
       const res = await client.pexpireifequal(key, this._id, time)
       if (res) {
-        return
+        return this
       }
 
       this._locked = false
@@ -127,7 +129,7 @@ export class Lock {
    * if no callback is supplied. If invoked in the context of a promise, it may
    * throw a LockReleaseError.
    */
-  async release(): Promise<void> {
+  async release(): Promise<Lock> {
     const key = this._key
     const client = this._client
 
@@ -153,6 +155,8 @@ export class Lock {
 
       throw err
     }
+
+    return this
   }
 
   /**
