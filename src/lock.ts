@@ -8,6 +8,7 @@ export interface Config {
   timeout: number
   retries: number
   delay: number
+  jitter: number
 }
 
 declare module 'ioredis' {
@@ -15,6 +16,10 @@ declare module 'ioredis' {
     delifequal(key: string, id: string): Promise<number>
     pexpireifequal(key: string, id: string, seconds: number): Promise<number>
   }
+}
+
+function getRandomArbitrary(min: number, max: number): number {
+  return Math.random() * (max - min) + min
 }
 
 /**
@@ -30,8 +35,9 @@ export class Lock {
 
   public readonly config: Config = {
     timeout: 10000,
-    retries: 0,
-    delay: 50
+    retries: 6,
+    delay: 50,
+    jitter: 1.2
   }
 
   /**
@@ -58,6 +64,11 @@ export class Lock {
       Object.assign(this.config, options)
     }
 
+    if (this.config.jitter < 1) {
+      process.emitWarning('jitter must be above or eq 1', 'IoredisLock', 'WARN001')
+      this.config.jitter = 1
+    }
+
     this._setupClient()
   }
 
@@ -81,7 +92,7 @@ export class Lock {
       this._locked = true
       this._key = key
       Lock._acquiredLocks.add(this)
-    } catch (err) {
+    } catch (err: any) {
       if (!(err instanceof LockAcquisitionError)) {
         throw new LockAcquisitionError(err.message)
       }
@@ -114,7 +125,7 @@ export class Lock {
       this._key = null
       Lock._acquiredLocks.delete(this)
       throw new LockExtendError(`Lock on "${key}" had expired`)
-    } catch (err) {
+    } catch (err: any) {
       if (!(err instanceof LockExtendError)) {
         throw new LockExtendError(err.message)
       }
@@ -147,7 +158,7 @@ export class Lock {
       if (!res) {
         throw new LockReleaseError(`Lock on "${key}" had expired`)
       }
-    } catch (err) {
+    } catch (err: any) {
       // Wrap redis errors
       if (!(err instanceof LockReleaseError)) {
         throw new LockReleaseError(err.message)
@@ -201,7 +212,7 @@ export class Lock {
       return
     }
 
-    await delay(this.config.delay)
+    await delay(this.config.delay * getRandomArbitrary(1, this.config.jitter))
     return this._attemptLock(key, retries - 1)
   }
 }

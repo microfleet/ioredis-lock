@@ -1,0 +1,46 @@
+version: v1.0
+name: dlock
+agent:
+  machine:
+    type: e1-standard-2
+    os_image: ubuntu2004
+
+fail_fast:
+  stop:
+    when: "branch != 'master'"
+
+auto_cancel:
+  running:
+    when: "branch != 'master'"
+
+global_job_config:
+  prologue:
+    commands:
+      - set -e
+      - sem-version node 16
+      - curl -f https://get.pnpm.io/v6.16.js | node - add --global pnpm@6
+      - checkout
+      - cache restore node-$(checksum pnpm-lock.yaml)
+      - pnpm i --prefer-offline
+      - cache store node-$(checksum pnpm-lock.yaml) ~/.pnpm-store
+
+blocks:
+  - name: tests
+    dependencies: []
+    task:
+      jobs:
+      - name: test the project
+        commands:
+        - pnpm run test
+
+  - name: release
+    dependencies: ["tests"]
+    skip:
+      when: "branch != 'master'"
+    task:
+      secrets:
+        - name: semantic-release
+      jobs:
+      - name: release
+        commands:
+          - pnpm run semantic-release
