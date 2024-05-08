@@ -1,6 +1,5 @@
 import { v1 } from 'uuid'
 import { LockAcquisitionError, LockReleaseError, LockExtendError } from './errors'
-import { delay } from 'bluebird'
 import * as scripts from './scripts'
 import type { Redis, Cluster, Result } from 'ioredis'
 
@@ -212,7 +211,12 @@ export class Lock {
       return
     }
 
-    await delay(this.config.delay * getRandomArbitrary(1, this.config.jitter))
+    await new Promise((resolve) =>
+      setTimeout(
+        resolve,
+        this.config.delay * getRandomArbitrary(1, this.config.jitter)
+      )
+    )
     return this._attemptLock(key, retries - 1)
   }
 }
