@@ -29,11 +29,10 @@
     "url": "https://github.com/microfleet/ioredis-lock.git"
   },
   "dependencies": {
-    "bluebird": "^3.7.2",
     "uuid": "^8.3.2"
   },
   "peerDependencies": {
-    "ioredis": "~4.x.x"
+    "ioredis": "~5.x.x"
   },
   "devDependencies": {
     "@makeomatic/deploy": "^12.5.0",
@@ -51,7 +50,7 @@
     "eslint-config-makeomatic": "^5.0.4",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-promise": "^6.0.0",
-    "ioredis": "^4.26.0",
+    "ioredis": "^5.4.1",
     "mocha": "^9.2.0",
     "semantic-release": "^19.0.2",
     "typescript": "^4.2.3"

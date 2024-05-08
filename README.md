@@ -1,7 +1,7 @@
 ![ioredis-lock](http://danielstjules.com/github/redislock-logo.png)
 
 Node distributed locking using redis with lua scripts. Compatible with
-redis >= 2.6.12. A better alternative to locking strategies based on SETNX or
+ioredis >= 5. A better alternative to locking strategies based on SETNX or
 WATCH/MULTI. Refer to [Implementation](#implementation) and
 [Alternatives](#alternatives) for details.
 
@@ -38,7 +38,7 @@ object specifying the following three options:
  * retries: Maximum number of retries in acquiring a lock if the first attempt failed (default: 0)
  * delay:   Time in milliseconds to wait between each attempt (default: 50 ms)
 
-``` javascript
+```javascript
 const Promise = require('bluebird');
 const Redis = require('ioredis');
 const client = new Redis();
@@ -62,7 +62,6 @@ Promise
   .then(() => {
     // all good
   });
-});
 ```
 
 Supports promises, thanks to bluebird, out of the box:
@@ -75,16 +74,21 @@ const lock = require('ioredis-lock').createLock(client);
 const LockAcquisitionError = redislock.LockAcquisitionError;
 const LockReleaseError = redislock.LockReleaseError;
 
-lock.acquire('app:feature:lock').then(() => {
-  // Lock has been acquired
-  return lock.release();
-}).then(() => {
-  // Lock has been released
-}).catch(LockAcquisitionError, (err) => {
-  // The lock could not be acquired
-}).catch(LockReleaseError, (err) => {
-  // The lock could not be released
-});
+lock
+  .acquire('app:feature:lock')
+  .then(() => {
+    // Lock has been acquired
+    return lock.release();
+  })
+  .then(() => {
+    // Lock has been released
+  })
+  .catch(LockAcquisitionError, (err) => {
+    // The lock could not be acquired
+  })
+  .catch(LockReleaseError, (err) => {
+    // The lock could not be released
+  });
 ```
 
 And an example with co:
@@ -121,7 +125,7 @@ SET key uuid PX timeout NX
 If the SET returns OK, the lock has been acquired on the given key, and an
 expiration has been set. Then, releasing a lock uses the following redis script:
 
-``` lua
+```lua
 if redis.call('GET', KEYS[1]) == ARGV[1] then
   return redis.call('DEL', KEYS[1])
 end
@@ -132,7 +136,7 @@ This ensures that the key is deleted only if it is currently holding the lock,
 by passing its UUID as an argument. Extending a lock is done with a similar
 lua script:
 
-``` lua
+```lua
 if redis.call('GET', KEYS[1]) == ARGV[1] then
   return redis.call('PEXPIRE', KEYS[1], ARGV[2])
 end
@@ -179,7 +183,7 @@ redis client, as well as options, if provided. The options object may contain
 following three keys, as outlined at the start of the documentation: timeout,
 retries and delay.
 
-``` javascript
+```javascript
 var lock = redislock.createLock(client, {
   timeout: 10000,
   retries: 3,
@@ -191,7 +195,7 @@ var lock = redislock.createLock(client, {
 
 Returns an array of currently active/acquired locks.
 
-``` javascript
+```javascript
 // Create 3 locks, but only acquire 2
 redislock.createLock(client);
 
@@ -231,7 +235,7 @@ invoked with an error on failure, and returns a promise if no callback is
 supplied. If invoked in the context of a promise, it may throw a
 LockAcquisitionError.
 
-``` javascript
+```javascript
 const lock = redislock.createLock(client);
 lock.acquire('example:lock', function(err) {
   if (err) return console.log(err.message); // 'Lock already held'
@@ -262,7 +266,7 @@ function. The callback is invoked with an error on failure, and returns a
 promise if no callback is supplied. If invoked in the context of a promise,
 it may throw a LockExtendError.
 
-``` javascript
+```javascript
 const lock = redislock.createLock(client);
 lock.acquire('app:lock', function(err) {
   if (err) return;

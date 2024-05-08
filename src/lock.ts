@@ -1,8 +1,7 @@
 import { v1 } from 'uuid'
 import { LockAcquisitionError, LockReleaseError, LockExtendError } from './errors'
-import { delay } from 'bluebird'
 import * as scripts from './scripts'
-import type Redis from 'ioredis'
+import type { Redis, Cluster, Result } from 'ioredis'
 
 export interface Config {
   timeout: number
@@ -12,9 +11,9 @@ export interface Config {
 }
 
 declare module 'ioredis' {
-  interface Commands {
-    delifequal(key: string, id: string): Promise<number>
-    pexpireifequal(key: string, id: string, seconds: number): Promise<number>
+  interface RedisCommander<Context> {
+    delifequal(key: string, id: string): Result<string, Context>;
+    pexpireifequal(key: string, id: string, seconds: number): Result<string, Context>;
   }
 }
 
@@ -29,7 +28,7 @@ export class Lock {
   static _acquiredLocks: Set<Lock> = new Set()
 
   private readonly _id: string = v1()
-  private readonly _client: Redis.Redis | Redis.Cluster
+  private readonly _client: Redis | Cluster
   private _locked = false
   private _key: string | null = null
 
@@ -52,11 +51,12 @@ export class Lock {
    * @property {int} timeout Time in milliseconds before which a lock expires
    *                         (default: 10000 ms)
    * @property {int} retries Maximum number of retries in acquiring a lock if the
-   *                         first attempt failed (default: 0)
+   *                         first attempt failed (default: 6)
    * @property {int} delay   Time in milliseconds to wait between each attempt
    *                         (default: 50 ms)
+   * @property {int} jitter  Jitter value to generate delay time (default: 1.2)
    */
-  constructor(client: Redis.Redis | Redis.Cluster, options?: Partial<Config>) {
+  constructor(client: Redis | Cluster, options?: Partial<Config>) {
     this._client = client
     Object.defineProperty(this, '_client', { enumerable: false })
 
@@ -212,7 +212,12 @@ export class Lock {
       return
     }
 
-    await delay(this.config.delay * getRandomArbitrary(1, this.config.jitter))
+    await new Promise((resolve) =>
+      setTimeout(
+        resolve,
+        this.config.delay * getRandomArbitrary(1, this.config.jitter)
+      )
+    )
     return this._attemptLock(key, retries - 1)
   }
 }
