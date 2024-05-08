@@ -51,9 +51,10 @@ export class Lock {
    * @property {int} timeout Time in milliseconds before which a lock expires
    *                         (default: 10000 ms)
    * @property {int} retries Maximum number of retries in acquiring a lock if the
-   *                         first attempt failed (default: 0)
+   *                         first attempt failed (default: 6)
    * @property {int} delay   Time in milliseconds to wait between each attempt
    *                         (default: 50 ms)
+   * @property {int} jitter  Jitter value to generate delay time (default: 1.2)
    */
   constructor(client: Redis | Cluster, options?: Partial<Config>) {
     this._client = client
