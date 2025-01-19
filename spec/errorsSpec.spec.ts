@@ -1,5 +1,5 @@
-import assert = require('assert')
-import * as errors from '../src/errors'
+import assert from 'node:assert'
+import * as errors from '../src/errors.js'
 
 describe('errors', () => {
   describe('LockAcquisitionError', () => {
