@@ -1,0 +1,5 @@
+{
+  "import": "@swc-node/register/esm-register",
+  "extension": "ts",
+  "reporter": "spec"
+}

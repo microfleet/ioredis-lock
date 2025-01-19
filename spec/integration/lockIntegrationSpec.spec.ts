@@ -4,10 +4,10 @@
  * The following tests are designed to run against a live redis-server instance.
  */
 
-import assert = require('assert')
-import Redis = require('ioredis')
-import * as redislock from '../../src/redislock'
-import { Lock } from '../../src/lock'
+import assert from 'node:assert'
+import { Redis } from 'ioredis'
+import * as redislock from '../../src/redislock.js'
+import { Lock } from '../../src/lock.js'
 
 describe('lock', () => {
   const client = new Redis('redis')

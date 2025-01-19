@@ -1,8 +1,8 @@
-import { v1 } from 'uuid'
-import { LockAcquisitionError, LockReleaseError, LockExtendError } from './errors'
-import { delay } from 'bluebird'
-import * as scripts from './scripts'
-import type Redis from 'ioredis'
+import { v4 } from 'uuid'
+import { LockAcquisitionError, LockReleaseError, LockExtendError } from './errors.js'
+import { setTimeout as delay } from 'node:timers/promises'
+import * as scripts from './scripts.js'
+import type { Redis, Cluster, Result } from 'ioredis'
 
 export interface Config {
   timeout: number
@@ -12,9 +12,9 @@ export interface Config {
 }
 
 declare module 'ioredis' {
-  interface Commands {
-    delifequal(key: string, id: string): Promise<number>
-    pexpireifequal(key: string, id: string, seconds: number): Promise<number>
+  interface RedisCommander<Context> {
+    delifequal(key: string, id: string): Result<string, Context>;
+    pexpireifequal(key: string, id: string, seconds: number): Result<string, Context>;
   }
 }
 
@@ -28,8 +28,8 @@ function getRandomArbitrary(min: number, max: number): number {
 export class Lock {
   static _acquiredLocks: Set<Lock> = new Set()
 
-  private readonly _id: string = v1()
-  private readonly _client: Redis.Redis | Redis.Cluster
+  private readonly _id: string = v4()
+  private readonly _client: Redis | Cluster
   private _locked = false
   private _key: string | null = null
 
@@ -56,7 +56,7 @@ export class Lock {
    * @property {int} delay   Time in milliseconds to wait between each attempt
    *                         (default: 50 ms)
    */
-  constructor(client: Redis.Redis | Redis.Cluster, options?: Partial<Config>) {
+  constructor(client: Redis | Cluster, options?: Partial<Config>) {
     this._client = client
     Object.defineProperty(this, '_client', { enumerable: false })
 

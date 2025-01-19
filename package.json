@@ -2,6 +2,16 @@
   "name": "@microfleet/ioredis-lock",
   "version": "4.0.0",
   "description": "Node distributed locking using redis with ioredis adapter",
+  "type": "module",
+  "main": "lib/redislock.js",
+  "types": "./lib/redislock.d.ts",
+  "exports": {
+    ".": {
+      "import": "./lib/redislock.js",
+      "default": "./lib/redislock.js",
+      "types": "./lib/redislock.d.ts"
+    }
+  },
   "publishConfig": {
     "access": "public"
   },
@@ -22,49 +32,45 @@
     "Bernhard Weisshuhn <bkw@codingforce.com>"
   ],
   "license": "MIT",
-  "main": "lib/redislock.js",
   "homepage": "https://github.com/microfleet/ioredis-lock",
   "repository": {
     "type": "git",
     "url": "https://github.com/microfleet/ioredis-lock.git"
   },
   "dependencies": {
-    "bluebird": "^3.7.2",
-    "uuid": "^8.3.2"
+    "uuid": "^11.0.5"
   },
   "peerDependencies": {
-    "ioredis": "~4.x.x"
+    "ioredis": "~4.x.x || ~5.x.x"
   },
   "devDependencies": {
-    "@makeomatic/deploy": "^12.5.0",
-    "@swc-node/register": "^1.4.2",
-    "@types/bluebird": "^3.5.33",
-    "@types/ioredis": "^4.22.3",
-    "@types/mocha": "^9.1.0",
-    "@types/node": "^17.0.14",
-    "@types/uuid": "^8.3.0",
-    "@typescript-eslint/eslint-plugin": "^5.10.2",
-    "@typescript-eslint/parser": "^5.10.2",
-    "codecov": "^3.8.3",
+    "@makeomatic/deploy": "^13.1.0",
+    "@oxc-resolver/binding-linux-arm64-musl": "^3.0.3",
+    "@swc-node/register": "^1.10.9",
+    "@swc/core-linux-arm64-musl": "^1.10.7",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^22.10.7",
+    "@types/uuid": "^10.0.0",
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
     "cross-env": "^7.0.3",
-    "eslint": "^8.8.0",
-    "eslint-config-makeomatic": "^5.0.4",
-    "eslint-plugin-import": "^2.22.1",
-    "eslint-plugin-promise": "^6.0.0",
-    "ioredis": "^4.26.0",
-    "mocha": "^9.2.0",
-    "semantic-release": "^19.0.2",
-    "typescript": "^4.2.3"
+    "eslint": "^8.57.1",
+    "eslint-config-makeomatic": "^6.0.0",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-promise": "^7.2.1",
+    "ioredis": "^5.4.2",
+    "mocha": "^11.0.1",
+    "semantic-release": "^24.2.1",
+    "typescript": "^5.7.3"
   },
   "engine": {
-    "node": ">= 12.18.0"
+    "node": ">= 22.13.0"
   },
   "scripts": {
     "lint": "eslint ./src",
-    "test": "npm run lint && mdep test run",
+    "test": "pnpm lint && pnpm compile && mdep test run",
     "compile": "tsc --build ./tsconfig.build.json",
-    "prepublishOnly": "npm run compile",
-    "pretest": "npm run compile",
+    "prepublishOnly": "pnpm compile",
     "semantic-release": "semantic-release"
   },
   "files": [

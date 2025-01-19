@@ -16,16 +16,14 @@ WATCH/MULTI. Refer to [Implementation](#implementation) and
     * [redislock.LockReleaseError](#redislocklockreleaseerror)
     * [redislock.LockExtendError](#redislocklockextenderror)
 * [Class: Lock](#class-lock)
-    * [lock.acquire(key, \[fn\])](#lockacquirekey-fn)
-    * [lock.release(\[fn\])](#lockreleasefn)
-    * [lock.extend(time, \[fn\])](#lockextendtime-fn)
+    * [lock.acquire(key)](#lockacquirekey-fn)
+    * [lock.release()](#lockreleasefn)
+    * [lock.extend(time)](#lockextendtime-fn)
 * [Tests](#tests)
 
 ## Installation
 
-Using npm, you can install redislock with `npm install ioredis-lock -S`.
-
-Note: since version 3.4.0 it's possible to use this with node@4 once again
+Using npm, you can install redislock with `npm i @microfleet/ioredis-lock -S`.
 
 ## Overview
 
@@ -39,17 +37,19 @@ object specifying the following three options:
  * delay:   Time in milliseconds to wait between each attempt (default: 50 ms)
 
 ``` javascript
-const Promise = require('bluebird');
-const Redis = require('ioredis');
+import Bluebird from 'bluebird'
+import { Redis } from 'ioredis'
+import { createLock } from '@microfleet/ioredis-lock'
+
 const client = new Redis();
-const lock = require('ioredis-lock').createLock(client, {
+const lock = createLock(client, {
   timeout: 20000,
   retries: 3,
   delay: 100,
 });
 
 // this uses bind feature of `bluebird`
-Promise
+Bluebird
   .bind(lock)
   .call('acquire', 'app:feature:lock')
   .catch(err => {
@@ -62,52 +62,30 @@ Promise
   .then(() => {
     // all good
   });
-});
 ```
 
 Supports promises, thanks to bluebird, out of the box:
 
 ```javascript
-const Redis = require('ioredis');
+import Bluebird from 'bluebird'
+import { Redis } from 'ioredis'
+import { createLock, LockAcquisitionError, LockReleaseError } from '@microfleet/ioredis-lock'
+
 const client = new Redis();
-const lock = require('ioredis-lock').createLock(client);
+const lock = createLock(client);
 
-const LockAcquisitionError = redislock.LockAcquisitionError;
-const LockReleaseError = redislock.LockReleaseError;
-
-lock.acquire('app:feature:lock').then(() => {
-  // Lock has been acquired
-  return lock.release();
-}).then(() => {
-  // Lock has been released
-}).catch(LockAcquisitionError, (err) => {
-  // The lock could not be acquired
-}).catch(LockReleaseError, (err) => {
-  // The lock could not be released
-});
-```
-
-And an example with co:
-
-```javascript
-const co = require('co');
-const Redis = require('ioredis');
-const client = new Redis();
-const lock = require('ioredis-lock').createLock(client);
-
-co(function *(){
-  try {
-    yield lock.acquire('app:feature:lock');
-  } catch (e) {
-    // Failed to acquire the lock
-  }
-
-  try {
-    yield lock.release();
-  } catch (e) {
-    // Failed to release
-  }
-})();
+Bluebird
+  .resolve(lock.acquire('app:feature:lock'))
+  .then(() => {
+    // Lock has been acquired
+    return lock.release();
+  }).then(() => {
+    // Lock has been released
+  }).catch(LockAcquisitionError, (err) => {
+    // The lock could not be acquired
+  }).catch(LockReleaseError, (err) => {
+    // The lock could not be released
+  });
 ```
 
 ## Implementation
@@ -180,7 +158,7 @@ following three keys, as outlined at the start of the documentation: timeout,
 retries and delay.
 
 ``` javascript
-var lock = redislock.createLock(client, {
+const lock = redislock.createLock(client, {
   timeout: 10000,
   retries: 3,
   delay: 100
@@ -195,11 +173,10 @@ Returns an array of currently active/acquired locks.
 // Create 3 locks, but only acquire 2
 redislock.createLock(client);
 
-redislock.createLock(client).acquire('app:lock1', function(err) {
-  redislock.createLock(client).acquire('app:lock2', function(err) {
-    const locks = redislock.getAcquiredLocks(); // [lock, lock]
-  });
-});
+await redislock.createLock(client).acquire('app:lock1')
+await redislock.createLock(client).acquire('app:lock2')
+
+const locks = redislock.getAcquiredLocks(); // [lock, lock]
 ```
 
 #### redislock.LockAcquisitionError
@@ -222,7 +199,7 @@ could not be extended.
 The lock class exposed by redislock. Each instance is assigned a UUID v1 string
 as an id, and is configured to work with the given redis client
 
-#### lock.acquire[key, [fn]]
+#### lock.acquire(key)
 
 Attempts to acquire a lock, given a key, and an optional callback function.
 If the initial lock fails, additional attempts will be made for the
@@ -233,9 +210,13 @@ LockAcquisitionError.
 
 ``` javascript
 const lock = redislock.createLock(client);
-lock.acquire('example:lock', function(err) {
-  if (err) return console.log(err.message); // 'Lock already held'
-});
+
+try {
+  await lock.acquire('example:lock')
+} catch (err) {
+  console.log(err.message); // 'Lock already held'
+}
+
 ```
 
 #### lock.release([fn])
@@ -243,19 +224,26 @@ lock.acquire('example:lock', function(err) {
 Attempts to release the lock, and accepts an optional callback function. The callback is invoked with an error on failure, and returns a promise if no callback is supplied. If invoked in the context of a promise, it may throw a LockReleaseError.
 
 ```js
-const lock = redislock.createLock(client);
-lock.acquire('app:lock', err => {
-  if (err) return;
+import { setTimeout } from 'node:timers/promises'
 
-  setTimeout(() => {
-    lock.release(err => {
-      if (err) return console.log(err.message); // 'Lock on app:lock has expired'
-    });
-  }, 20000);
-});
+const lock = redislock.createLock(client)
+
+try {
+  await lock.acquire('app:lock')
+  await setTimeout(20e3)
+  
+  try {
+    await lock.release();
+  } catch (err) {
+    console.log(err.message); // 'Lock on app:lock has expired'
+  }
+
+} catch (err) {
+  throw err
+}
 ```
 
-#### lock.extend(time, [fn])
+#### lock.extend(time)
 
 Attempts to extend the timeout of a lock, and accepts an optional callback
 function. The callback is invoked with an error on failure, and returns a
@@ -264,15 +252,14 @@ it may throw a LockExtendError.
 
 ``` javascript
 const lock = redislock.createLock(client);
-lock.acquire('app:lock', function(err) {
-  if (err) return;
+await lock.acquire('app:lock')
 
-  setTimeout(function() {
-    lock.extend(20000, function(err) {
-      if (err) return console.log(err.message); // 'Lock on app:lock has expired'
-    });
-  }, 20000)
-});
+await setTimeout(20e3)
+try {
+  await lock.extend(20000)
+} catch (err) {
+  console.log(err.message); // 'Lock on app:lock has expired'
+}
 ```
 
 ## Tests
