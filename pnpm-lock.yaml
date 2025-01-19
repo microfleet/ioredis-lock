@@ -19,7 +19,7 @@ importers:
         specifier: ^3.0.3
         version: 3.0.3
       '@swc-node/register':
-        specifier: ^1.4.2
+        specifier: ^1.10.9
         version: 1.10.9(@swc/core@1.10.7)(@swc/types@0.1.17)(typescript@5.7.3)
       '@swc/core-linux-arm64-musl':
         specifier: ^1.10.7
@@ -34,22 +34,22 @@ importers:
         specifier: ^10.0.0
         version: 10.0.0
       '@typescript-eslint/eslint-plugin':
-        specifier: ^7.x.x
+        specifier: ^7.18.0
         version: 7.18.0(@typescript-eslint/parser@7.18.0(eslint@8.57.1)(typescript@5.7.3))(eslint@8.57.1)(typescript@5.7.3)
       '@typescript-eslint/parser':
-        specifier: ^7.x.x
+        specifier: ^7.18.0
         version: 7.18.0(eslint@8.57.1)(typescript@5.7.3)
       cross-env:
         specifier: ^7.0.3
         version: 7.0.3
       eslint:
-        specifier: ^8.8.0
+        specifier: ^8.57.1
         version: 8.57.1
       eslint-config-makeomatic:
         specifier: ^6.0.0
         version: 6.0.0(typescript@5.7.3)
       eslint-plugin-import:
-        specifier: ^2.22.1
+        specifier: ^2.31.0
         version: 2.31.0(@typescript-eslint/parser@7.18.0(eslint@8.57.1)(typescript@5.7.3))(eslint@8.57.1)
       eslint-plugin-promise:
         specifier: ^7.2.1
@@ -467,6 +467,7 @@ packages:
   '@swc/core-linux-arm64-musl@1.10.7':
     resolution: {integrity: sha512-gp5Un3EbeSThBIh6oac5ZArV/CsSmTKj5jNuuUAuEsML3VF9vqPO+25VuxCvsRf/z3py+xOWRaN2HY/rjMeZog==}
     engines: {node: '>=10'}
+    cpu: [arm64]
     os: [linux]
 
   '@swc/core-linux-x64-gnu@1.10.7':

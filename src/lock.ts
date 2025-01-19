@@ -2,7 +2,7 @@ import { v4 } from 'uuid'
 import { LockAcquisitionError, LockReleaseError, LockExtendError } from './errors.js'
 import { setTimeout as delay } from 'node:timers/promises'
 import * as scripts from './scripts.js'
-import type { Redis, Cluster } from 'ioredis'
+import type { Redis, Cluster, Result } from 'ioredis'
 
 export interface Config {
   timeout: number
@@ -12,9 +12,9 @@ export interface Config {
 }
 
 declare module 'ioredis' {
-  interface RedisCommander {
-    delifequal(key: string, id: string): Promise<number>
-    pexpireifequal(key: string, id: string, seconds: number): Promise<number>
+  interface RedisCommander<Context> {
+    delifequal(key: string, id: string): Result<string, Context>;
+    pexpireifequal(key: string, id: string, seconds: number): Result<string, Context>;
   }
 }
 
