@@ -1,4 +1,4 @@
-import { v4 } from 'uuid'
+import { randomUUID } from 'node:crypto'
 import { LockAcquisitionError, LockReleaseError, LockExtendError } from './errors.js'
 import { setTimeout as delay } from 'node:timers/promises'
 import * as scripts from './scripts.js'
@@ -28,7 +28,7 @@ function getRandomArbitrary(min: number, max: number): number {
 export class Lock {
   static _acquiredLocks: Set<Lock> = new Set()
 
-  private readonly _id: string = v4()
+  private readonly _id: string = randomUUID()
   private readonly _client: Redis | Cluster
   private _locked = false
   private _key: string | null = null

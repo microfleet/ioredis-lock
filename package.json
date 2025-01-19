@@ -37,9 +37,6 @@
     "type": "git",
     "url": "https://github.com/microfleet/ioredis-lock.git"
   },
-  "dependencies": {
-    "uuid": "^11.0.5"
-  },
   "peerDependencies": {
     "ioredis": "~4.x.x || ~5.x.x"
   },
